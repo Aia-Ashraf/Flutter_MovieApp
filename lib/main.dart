@@ -1,16 +1,11 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_app/movieModel.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_app/API.dart';
+import 'package:flutter_app/Details.dart';
+import 'package:flutter_app/models/MovieModel.dart';
 
 void main() => runApp(new MyApp());
 
 void main1() => debugDumpApp();
-String url =
-    'https://api.themoviedb.org/3/movie/popular?api_key=11af5a2e9dda5914db6389d51f4a1e9f';
-String imageFirstURLPart = "http://image.tmdb.org/t/p/w185";
 
 class MyApp extends StatelessWidget {
   @override
@@ -30,8 +25,8 @@ class MyApp extends StatelessWidget {
 }
 
 class RandomWordsState extends State<RandomWords> {
-  var movieResult = new movieModel();
-  var users = new List<movieModel>();
+  var movieResult = new MovieModel();
+  var users = new List<MovieModel>();
   List<dynamic> movieList;
 
   _getUsers() {
@@ -62,7 +57,7 @@ class RandomWordsState extends State<RandomWords> {
           itemBuilder: (context, index) {
             return ListTile(
               title: Text(
-                movieResult.results[index].title,
+                movieResult.results[index ?? ""].title,
                 style: TextStyle(
                     inherit: true, fontStyle: FontStyle.italic, fontSize: 17),
               ),
@@ -71,14 +66,19 @@ class RandomWordsState extends State<RandomWords> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => DetailsScreen(
-                            title: movieResult.results[index].title,
-                            description: movieResult.results[index].overview,
-                            imgPath: movieResult.results[index].posterPath,
+                            title: movieResult.results[index ?? ""].title,
+                            description:
+                                movieResult.results[index ?? ""].overview,
+                            imgPath:
+                                movieResult.results[index ?? ""].posterPath,
+                            data: movieResult.results[index ?? ""].releaseDate,
+                            rate: movieResult.results[index ?? ""].voteAverage,
+                            id: movieResult.results[index ?? ""].id,
                           )),
                 );
               },
               leading: new Image.network(
-                imageFirstURLPart + movieResult.results[index].posterPath,
+                imageFirstURLPart + movieResult.results[index ?? ""].posterPath,
                 width: 55,
                 height: 55,
                 fit: BoxFit.fill,
@@ -92,65 +92,4 @@ class RandomWordsState extends State<RandomWords> {
 class RandomWords extends StatefulWidget {
   @override
   RandomWordsState createState() => new RandomWordsState();
-}
-
-class DetailsScreenState extends State<DetailsScreen> {
-  var rws = new RandomWordsState();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Details"),
-      ),
-      body: SizedBox(
-        height: 700,
-        width: 450,
-        child: Card(
-          child: Column(
-            children: [
-              ListTile(
-                title: Text(
-                  widget.title.toString(),
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                  textScaleFactor: 2,
-                ),
-                subtitle: Text(widget.description.toString()),
-                leading: new Image.network(
-                  imageFirstURLPart + widget.imgPath.toString(),
-                  width: 150,
-                  height: 150,
-                  fit: BoxFit.fill,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class DetailsScreen extends StatefulWidget {
-  var title;
-  var description;
-  var imgPath;
-
-  DetailsScreen({this.title, this.description, this.imgPath});
-
-  @override
-  DetailsScreenState createState() => new DetailsScreenState();
-}
-
-class API {
-  static Future<movieModel> getPost() async {
-    final response = await http.get('$url');
-
-    if (response.statusCode == 200) {
-      return movieModel.fromJson(json.decode(response.body));
-    } else {
-      // If that response was not OK, throw an error.
-      throw Exception('Failed to load post');
-    }
-  }
 }

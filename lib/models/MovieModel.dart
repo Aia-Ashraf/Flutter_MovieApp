@@ -1,10 +1,10 @@
-class movieModel {
+class MovieModel {
   int _page;
   int _totalResults;
   int _totalPages;
   List<Results> _results;
 
-  movieModel(
+  MovieModel(
       {int page, int totalResults, int totalPages, List<Results> results}) {
     this._page = page;
     this._totalResults = totalResults;
@@ -21,7 +21,7 @@ class movieModel {
   List<Results> get results => _results;
   set results(List<Results> results) => _results = results;
 
-  movieModel.fromJson(Map<String, dynamic> json) {
+  MovieModel.fromJson(Map<String, dynamic> json) {
     _page = json['page'];
     _totalResults = json['total_results'];
     _totalPages = json['total_pages'];
