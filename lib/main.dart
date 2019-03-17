@@ -12,6 +12,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.teal,
+      ),
       title: 'Welcome to Flutter',
       home: new Scaffold(
         appBar: new AppBar(
@@ -20,6 +24,7 @@ class MyApp extends StatelessWidget {
         body: new Center(
           child: new RandomWords(),
         ),
+
       ),
     );
   }
@@ -52,6 +57,7 @@ class RandomWordsState extends State<RandomWords> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      backgroundColor: Colors.white12,
       body: StreamBuilder<List<MovieModel>>(
           stream: movieBloc.movies,
           builder: (context, snapshot) {
@@ -60,12 +66,50 @@ class RandomWordsState extends State<RandomWords> {
                 itemCount: snapshot.data.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(
-                      movieResult.results[index ?? ""].title,
-                      style: TextStyle(
-                          inherit: true,
-                          fontStyle: FontStyle.italic,
-                          fontSize: 17),
+                    title: Card(
+                      elevation: 11.0,
+                      margin: new EdgeInsets.symmetric(
+                          horizontal: 10.0, vertical: 20.0),
+                      child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            border: Border.all(width: 2, color: Colors.black38),
+                            borderRadius: const BorderRadius.all(
+                                const Radius.circular(2)),
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.all(2.0),
+                            decoration: BoxDecoration(
+                                color: Colors.black,
+                                border:
+                                    Border.all(width: 1, color: Colors.black38),
+                                borderRadius: const BorderRadius.all(
+                                    const Radius.circular(1))),
+                            child: new Row(crossAxisAlignment: CrossAxisAlignment.start,
+                                 children: <Widget>[
+                              CircleAvatar(
+                                  maxRadius: 70,
+                                  backgroundColor: Colors.grey,
+                                  backgroundImage: NetworkImage(
+                                    imageFirstURLPart +
+                                        movieResult
+                                            .results[index ?? ""].posterPath,
+                                  )),
+
+                              new Expanded(child:Text(
+                                  movieResult.results[index ?? ""].title,
+                                  textAlign: TextAlign.center,
+                                 overflow: TextOverflow.ellipsis,
+                                  softWrap: true,
+                                    maxLines: 2,
+                                  textScaleFactor: .9,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontStyle: FontStyle.italic,
+                                      color: Colors.white.withOpacity(0.6)),
+                                ),),
+                            ]),
+                          )),
                     ),
                     onTap: () {
                       Navigator.push(
@@ -82,22 +126,17 @@ class RandomWordsState extends State<RandomWords> {
                                   rate: movieResult
                                       .results[index ?? ""].voteAverage,
                                   id: movieResult.results[index ?? ""].id,
-                                )),
+                                )
+                        ),
                       );
                     },
-                    leading: new Image.network(
-                      imageFirstURLPart +
-                          movieResult.results[index ?? ""].posterPath,
-                      width: 55,
-                      height: 55,
-                      fit: BoxFit.fill,
-                    ),
                   );
                 },
               );
             else
               return Container();
-          }),
+          }
+          ),
     );
   }
 }
